@@ -16,6 +16,8 @@ export AGENDAV_TITLE="${AGENDAV_TITLE:-Calendar}"
 export AGENDAV_CALDAV_PUBLIC_URL="${AGENDAV_CALDAV_PUBLIC_URL:-$AGENDAV_CALDAV_BASEURL}"
 export AGENDAV_TIMEZONE="${AGENDAV_TIMEZONE:-Europe/Vienna}"
 export AGENDAV_LANGUAGE="${AGENDAV_LANGUAGE:-de_DE}"
+export AGENDAV_CALDAV_AUTHMETHOD="${AGENDAV_CALDAV_AUTHMETHOD:-basic}"
+case "$AGENDAV_CALDAV_AUTHMETHOD" in basic|digest) ;; *) echo "AGENDAV_CALDAV_AUTHMETHOD must be basic or digest" >&2; exit 1;; esac
 
 php -r '
 $settings = [
@@ -25,7 +27,7 @@ $settings = [
   "session.encryption.key" => getenv("AGENDAV_SESSION_ENCRYPTION_KEY"),
   "caldav.baseurl" => getenv("AGENDAV_CALDAV_BASEURL"),
   "caldav.baseurl.public" => getenv("AGENDAV_CALDAV_PUBLIC_URL"),
-  "caldav.authmethod" => "basic",
+  "caldav.authmethod" => getenv("AGENDAV_CALDAV_AUTHMETHOD"),
   "defaults.timezone" => getenv("AGENDAV_TIMEZONE"),
   "defaults.language" => getenv("AGENDAV_LANGUAGE"),
   "defaults.time_format" => "24",
