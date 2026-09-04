@@ -1,0 +1,37 @@
+name: check AgenDAV release
+
+on:
+  schedule:
+    - cron: '23 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - run: python3 scripts/update_agendav.py
+      - id: diff
+        run: |
+          if git diff --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(grep '^ARG AGENDAV_VERSION=' Dockerfile | cut -d= -f2)
+          branch="deps/agendav-${version}"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Dockerfile
+          git commit -m "chore(deps): update AgenDAV to ${version}"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" --title "chore(deps): update AgenDAV to ${version}" --body "Updates the pinned official release archive and its published SHA-256 digest."
