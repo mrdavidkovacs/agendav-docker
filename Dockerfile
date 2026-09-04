@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
 # Updated by scripts/update_agendav.py from official signed release metadata.
 ARG AGENDAV_VERSION=3.3.1
 ARG AGENDAV_SHA256=aec1038845ea9b489f575028d092fb7ef3dbee7dcf302783a3f6d383e7473030
