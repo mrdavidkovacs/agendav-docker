@@ -8,8 +8,8 @@ ARG AGENDAV_VERSION
 ARG AGENDAV_SHA256
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl libicu-dev libonig-dev libzip-dev \
- && docker-php-ext-install -j"$(nproc)" intl mbstring pdo_sqlite zip \
+ && apt-get install -y --no-install-recommends ca-certificates curl libicu-dev libsqlite3-dev libzip-dev \
+ && docker-php-ext-install -j"$(nproc)" intl pdo_sqlite zip \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
