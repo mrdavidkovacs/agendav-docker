@@ -21,6 +21,9 @@ RUN curl --fail --location --show-error --output agendav.tar.gz \
  && a2enmod rewrite \
  && sed -ri 's!/var/www/html!/app/public!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+COPY docker/agendav.conf /etc/apache2/conf-available/agendav.conf
+RUN a2enconf agendav
+
 COPY docker-entrypoint.sh /usr/local/bin/agendav-entrypoint
 RUN chmod 755 /usr/local/bin/agendav-entrypoint
 
