@@ -11,21 +11,23 @@ Every push to `main` builds `linux/amd64` and `linux/arm64` images. The release 
 
 ## Configuration
 
-AgenDAV uses SQLite in `/data`; mount that directory persistently. Its only required settings are a random CSRF secret and Baikal's internal CalDAV endpoint.
+AgenDAV uses an external MariaDB/MySQL database, as supported by upstream for multi-user production deployments. Required: `AGENDAV_DB_HOST`, `AGENDAV_DB_NAME`, `AGENDAV_DB_USER`, `AGENDAV_DB_PASSWORD`, `AGENDAV_CSRF_SECRET`, `AGENDAV_SESSION_ENCRYPTION_KEY` (64 random hex characters), and `AGENDAV_CALDAV_BASEURL` (the internal Baïkal URL ending in `/dav.php/`).
+
+Optional: `AGENDAV_CALDAV_PUBLIC_URL`, `AGENDAV_TITLE`, `AGENDAV_TIMEZONE` (defaults to `Europe/Vienna`) and `AGENDAV_LANGUAGE` (defaults to `de_DE`). Migrations run when the container starts, so the database must be healthy first. Use your deployment's secret mechanism rather than committing values to Compose.
 
 ```yaml
 services:
   agendav:
     image: ghcr.io/mrdavidkovacs/agendav-docker:3.3.1
     environment:
-      AGENDAV_CSRF_SECRET: replace-with-a-random-64-hex-character-secret
-      AGENDAV_CALDAV_BASEURL: http://dkr01.srv.arpa:5232/dav.php/
+      AGENDAV_DB_HOST: mariadb
+      AGENDAV_DB_NAME: agendav
+      AGENDAV_DB_USER: agendav
+      AGENDAV_DB_PASSWORD: use-a-secret
+      AGENDAV_CSRF_SECRET: use-a-random-secret
+      AGENDAV_SESSION_ENCRYPTION_KEY: use-64-random-hex-characters
+      AGENDAV_CALDAV_BASEURL: http://baikal:80/dav.php/
       AGENDAV_CALDAV_PUBLIC_URL: https://dav.example.net/dav.php/
-      AGENDAV_TITLE: Family calendar
-      AGENDAV_TIMEZONE: Europe/Vienna
-      AGENDAV_LANGUAGE: de_DE
-    volumes:
-      - ./data:/data
     ports:
       - "8080:80"
     restart: unless-stopped

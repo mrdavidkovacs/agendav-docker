@@ -8,8 +8,8 @@ ARG AGENDAV_VERSION
 ARG AGENDAV_SHA256
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl libicu-dev libsqlite3-dev libzip-dev \
- && docker-php-ext-install -j"$(nproc)" intl pdo_sqlite zip \
+ && apt-get install -y --no-install-recommends ca-certificates curl libicu-dev libzip-dev \
+ && docker-php-ext-install -j"$(nproc)" intl pdo_mysql zip \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -19,8 +19,7 @@ RUN curl --fail --location --show-error --output agendav.tar.gz \
  && tar --extract --gzip --file agendav.tar.gz --strip-components=1 \
  && rm agendav.tar.gz \
  && a2enmod rewrite \
- && sed -ri 's!/var/www/html!/app/public!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
- && chmod -R 750 /app/var /app/config
+ && sed -ri 's!/var/www/html!/app/public!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 COPY docker-entrypoint.sh /usr/local/bin/agendav-entrypoint
 RUN chmod 755 /usr/local/bin/agendav-entrypoint
